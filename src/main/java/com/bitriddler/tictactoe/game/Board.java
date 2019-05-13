@@ -23,6 +23,22 @@ public class Board {
         return board;
     }
 
+    public Player getPlayerAt(int x, int y) {
+        int index = board[x][y];
+        if (index == INITIAL_VALUE) {
+            return null;
+        }
+        return players.get(index);
+    }
+
+    public int getBoardSize() {
+        return board.length;
+    }
+
+    public int getNumberOfConnectedPlayers() {
+        return players.size();
+    }
+
     private void initialize() {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {

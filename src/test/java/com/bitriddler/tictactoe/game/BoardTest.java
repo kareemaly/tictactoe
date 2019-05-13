@@ -155,4 +155,29 @@ class BoardTest {
         board.makeMove(p1, 2, 0);
         assertEquals(p1, board.getWinner());
     }
+
+    @Test
+    public void testGetPlayerAt() throws Exception {
+        Board board = new Board(3);
+        Player p1 = this.getDummyPlayer();
+        board.addPlayer(p1);
+        board.makeMove(p1, 2, 1);
+        assertEquals(p1, board.getPlayerAt(2, 1));
+    }
+
+    @Test
+    public void testGetBoardSize() throws Exception {
+        Board board = new Board(3);
+        assertEquals(3, board.getBoardSize());
+    }
+
+    @Test
+    public void testGetNumberOfConnectedPlayers() throws Exception {
+        Board board = new Board(3);
+        Player p1 = this.getDummyPlayer();
+        Player p2 = this.getDummyPlayer();
+        board.addPlayer(p1);
+        board.addPlayer(p2);
+        assertEquals(2, board.getNumberOfConnectedPlayers());
+    }
 }
