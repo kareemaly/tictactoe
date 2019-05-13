@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BoardTest {
 
     private Player getDummyPlayer() {
-        return new Player();
+        return new Player('x');
     }
 
     @Test
