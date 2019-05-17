@@ -23,7 +23,7 @@ class SocketConnectionHandler implements Runnable {
 
         // New game then add the AI player
         if (game.getNumberOfConnectedPlayers() == 0) {
-            Player aiPlayer = this.getAiPlayer(game);   
+            Player aiPlayer = this.getAiPlayer(game);
             game.addSubscriberForAllEvents(aiPlayer);
             game.addPlayer(aiPlayer);
         }

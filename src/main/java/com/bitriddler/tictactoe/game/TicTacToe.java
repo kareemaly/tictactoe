@@ -1,6 +1,7 @@
 package com.bitriddler.tictactoe.game;
 
 import com.bitriddler.tictactoe.game.events.GameEvent;
+import com.bitriddler.tictactoe.game.events.GameEventPublisher;
 import com.bitriddler.tictactoe.game.events.GameEventSubscriber;
 import com.bitriddler.tictactoe.game.events.GameEventType;
 import com.bitriddler.tictactoe.game.exceptions.BoardSizeInvalidException;

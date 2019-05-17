@@ -1,8 +1,4 @@
-package com.bitriddler.tictactoe.game;
-
-import com.bitriddler.tictactoe.game.events.GameEvent;
-import com.bitriddler.tictactoe.game.events.GameEventSubscriber;
-import com.bitriddler.tictactoe.game.events.GameEventType;
+package com.bitriddler.tictactoe.game.events;
 
 import java.util.ArrayList;
 import java.util.HashMap;
