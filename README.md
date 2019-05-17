@@ -24,7 +24,7 @@ Change port `8888` to whichever port you like.
 Now the game server has started and players can start connecting to play against each
 other.
 
-### Connecting To The Game - For Players
+## Connecting To The Game - For Players
 Using Netcat linux command
 ```
 nc 127.0.0.1 8888
