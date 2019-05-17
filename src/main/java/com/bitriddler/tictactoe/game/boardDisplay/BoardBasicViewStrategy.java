@@ -1,15 +1,19 @@
-package com.bitriddler.tictactoe.game;
+package com.bitriddler.tictactoe.game.boardDisplay;
 
-public class BoardDisplay {
-    private Board board;
+import com.bitriddler.tictactoe.game.GameBoard;
+import com.bitriddler.tictactoe.game.Player;
 
-    public BoardDisplay(Board board) {
+public class BoardBasicViewStrategy implements BoardViewStrategy {
+
+    private GameBoard board;
+
+    public BoardBasicViewStrategy(GameBoard board) {
         this.board = board;
     }
 
     private String getRowString(int rowNo) {
         String result = "";
-        for (int j = 0; j < board.getBoardSize(); j++) {
+        for (int j = 0; j < board.size(); j++) {
             if (j == 0) {
                 result += "| ";
             }
@@ -26,15 +30,15 @@ public class BoardDisplay {
 
     private String getLineSeparator() {
         return "\n" + String.format(
-                String.format("%%%ds", board.getBoardSize()*4+1),
+                String.format("%%%ds", board.size()*4+1),
                 " "
         ).replace(" ","-") + "\n";
     }
 
     @Override
-    public String toString() {
+    public String get() {
         String result = "";
-        int size = board.getBoardSize();
+        int size = board.size();
         for (int i = 0; i < size; i++) {
             result += this.getRowString(i);
             if (i != size - 1) {
@@ -42,5 +46,5 @@ public class BoardDisplay {
             }
         }
         return result;
-    } 
+    }
 }
