@@ -6,8 +6,6 @@ import com.bitriddler.tictactoe.game.exceptions.GameFullException;
 import java.util.ArrayList;
 
 class SocketConnectionHandler implements Runnable {
-    private Player player;
-    private TicTacToe game;
     private PlayerFactory playerFactory;
     private TicTacToeRepository gameRepository;
     private GameConfig gameConfig;
@@ -20,32 +18,34 @@ class SocketConnectionHandler implements Runnable {
         this.gameConfig = gameConfig;
     }
 
-    private void initializeGame() throws GameFullException {
-        game = gameRepository.getOrCreateGame();
-        Player aiPlayer = this.getAiPlayer();
+    private TicTacToe initializeGame() throws GameFullException {
+        TicTacToe game = gameRepository.getOrCreateGame();
 
         // New game then add the AI player
         if (game.getNumberOfConnectedPlayers() == 0) {
+            Player aiPlayer = this.getAiPlayer(game);   
             game.addSubscriberForAllEvents(aiPlayer);
             game.addPlayer(aiPlayer);
         }
+
+        return game;
     }
 
-    private void initializePlayer() {
+    private Player initializePlayer(TicTacToe game) {
         // Get player symbol from configurations
         char playerSymbol = gameConfig.getPlayerSymbolAt(
                 game.getNumberOfConnectedPlayers() - 1
         );
 
         // Create human player that stream to console
-        player = playerFactory.makeHumanPlayer(
+        return playerFactory.makeHumanPlayer(
                 game.getBoard(),
                 playerSymbol,
                 clientSocketConnection
         );
     }
 
-    private Player getAiPlayer() {
+    private Player getAiPlayer(TicTacToe game) {
         ArrayList<Player> hPlayers = game.getPlayers();
         return playerFactory.makeAiPlayer(
                 gameConfig.getAiSymbol(),
@@ -55,9 +55,12 @@ class SocketConnectionHandler implements Runnable {
 
     @Override
     public void run() {
+        TicTacToe game;
+        Player player;
+
         try {
-            this.initializeGame();
-            this.initializePlayer();
+            game = this.initializeGame();
+            player = this.initializePlayer(game);
             // Listen for all game events
             game.addSubscriberForAllEvents(player);
             // Add player to game
