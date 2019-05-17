@@ -2,11 +2,10 @@ package com.bitriddler.tictactoe.game.moveParser;
 
 import com.bitriddler.tictactoe.game.GameMove;
 import com.bitriddler.tictactoe.game.exceptions.InvalidMoveCommandException;
-import com.bitriddler.tictactoe.game.exceptions.InvalidMoveException;
 
 public class CommaMoveParserStrategy implements MoveParserStrategy {
     @Override
-    public GameMove parse(String command) throws InvalidMoveCommandException, InvalidMoveException {
+    public GameMove parse(String command) throws InvalidMoveCommandException {
         String[] positions = command.split(",");
 
         if (positions.length != 2) {
