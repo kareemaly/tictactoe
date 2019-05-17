@@ -8,9 +8,15 @@ import com.bitriddler.tictactoe.game.exceptions.InvalidMoveException;
 import com.bitriddler.tictactoe.game.moveParser.MoveParserStrategy;
 
 public class HumanPlayer extends Player {
+    private GameIO gameIO;
+    private BoardViewStrategy boardViewStrategy;
+    private MoveParserStrategy moveParserStrategy;
 
     HumanPlayer(char symbol, GameIO gameIO, BoardViewStrategy boardViewStrategy, MoveParserStrategy moveParserStrategy) {
-        super(symbol, gameIO, boardViewStrategy, moveParserStrategy);
+        super(symbol);
+        this.boardViewStrategy = boardViewStrategy;
+        this.gameIO = gameIO;
+        this.moveParserStrategy = moveParserStrategy;
     }
 
     private void askToMakeMove(GameEvent event) {

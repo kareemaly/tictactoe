@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DummyPlayer extends Player {
 
     public DummyPlayer(char symbol) {
-        super(symbol, null, null, null);
+        super(symbol);
     }
 
     @Override
