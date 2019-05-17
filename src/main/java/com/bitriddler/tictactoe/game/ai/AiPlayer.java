@@ -1,6 +1,8 @@
-package com.bitriddler.tictactoe.game;
+package com.bitriddler.tictactoe.game.ai;
 
-import com.bitriddler.tictactoe.game.ai.BestMoveStrategy;
+import com.bitriddler.tictactoe.game.GameBoard;
+import com.bitriddler.tictactoe.game.GameMove;
+import com.bitriddler.tictactoe.game.Player;
 import com.bitriddler.tictactoe.game.events.GameEvent;
 import com.bitriddler.tictactoe.game.events.GameEventType;
 import com.bitriddler.tictactoe.game.exceptions.InvalidMoveException;
@@ -11,7 +13,7 @@ public class AiPlayer extends Player {
 
     private BestMoveStrategy bestMoveStrategy;
 
-    AiPlayer(char symbol, BestMoveStrategy bestMoveStrategy) {
+    public AiPlayer(char symbol, BestMoveStrategy bestMoveStrategy) {
         super(symbol);
         this.bestMoveStrategy = bestMoveStrategy;
     }
