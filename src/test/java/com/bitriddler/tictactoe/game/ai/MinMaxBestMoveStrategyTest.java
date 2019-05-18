@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 import com.bitriddler.tictactoe.game.GameBoard;
 import com.bitriddler.tictactoe.game.GameMove;
 import com.bitriddler.tictactoe.game.Player;
+import com.bitriddler.tictactoe.game.winner.WinnerStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -19,9 +20,11 @@ class MinMaxBestMoveStrategyTest {
     Player p2;
     @Mock
     Player ai;
+    @Mock
+    WinnerStrategy winnerStrategy;
 
     MinMaxBestMoveStrategy createInstance() {
-        return spy(new MinMaxBestMoveStrategy(new Player[]{p1, p2}, ai));
+        return spy(new MinMaxBestMoveStrategy(winnerStrategy, new Player[]{p1, p2}, ai));
     }
 
     @BeforeEach
@@ -50,8 +53,7 @@ class MinMaxBestMoveStrategyTest {
                 .getPlayerScore(board, p1));
         assertEquals(2, strategy
                 .getPlayerScore(board, p2));
-        // ai is almost going to win
-        assertEquals(4, strategy
+        assertEquals(3, strategy
                 .getPlayerScore(board, ai));
     }
 
@@ -73,14 +75,13 @@ class MinMaxBestMoveStrategyTest {
         board.setPlayerAt(1, 2, p2);
         assertEquals(2, strategy
                 .getPlayerScore(board, p1));
-        assertEquals(4, strategy
+        assertEquals(3, strategy
                 .getPlayerScore(board, p2));
 
-        // p2 is very close to win (3 in a row)
         board.setPlayerAt(1, 3, p2);
         assertEquals(1, strategy
                 .getPlayerScore(board, p1));
-        assertEquals(9, strategy
+        assertEquals(5, strategy
                 .getPlayerScore(board, p2));
 
         // p1 closed the row
@@ -89,6 +90,54 @@ class MinMaxBestMoveStrategyTest {
                 .getPlayerScore(board, p1));
         assertEquals(2, strategy
                 .getPlayerScore(board, p2));
+    }
+
+    @Test
+    void testGettingMaximumScoreInCaseOfColWin() {
+        GameBoard board = new GameBoard(3);
+        MinMaxBestMoveStrategy strategy = createInstance();
+
+        board.setPlayerAt(0, 2, p1);
+        board.setPlayerAt(1, 2, p1);
+        board.setPlayerAt(2, 2, p1);
+        assertEquals(Integer.MAX_VALUE, strategy
+                .getPlayerScore(board, p1));
+    }
+
+    @Test
+    void testGettingMaximumScoreInCaseOfRowWin() {
+        GameBoard board = new GameBoard(3);
+        MinMaxBestMoveStrategy strategy = createInstance();
+
+        board.setPlayerAt(1, 0, p1);
+        board.setPlayerAt(1, 1, p1);
+        board.setPlayerAt(1, 2, p1);
+        assertEquals(Integer.MAX_VALUE, strategy
+                .getPlayerScore(board, p1));
+    }
+
+    @Test
+    void testGettingMaximumScoreInCaseOfDiagWin() {
+        GameBoard board = new GameBoard(3);
+        MinMaxBestMoveStrategy strategy = createInstance();
+
+        board.setPlayerAt(0, 0, p1);
+        board.setPlayerAt(1, 1, p1);
+        board.setPlayerAt(2, 2, p1);
+        assertEquals(Integer.MAX_VALUE, strategy
+                .getPlayerScore(board, p1));
+    }
+
+    @Test
+    void testGettingMaximumScoreInCaseOfReverseDiagWin() {
+        GameBoard board = new GameBoard(3);
+        MinMaxBestMoveStrategy strategy = createInstance();
+
+        board.setPlayerAt(0, 2, p1);
+        board.setPlayerAt(1, 1, p1);
+        board.setPlayerAt(2, 0, p1);
+        assertEquals(Integer.MAX_VALUE, strategy
+                .getPlayerScore(board, p1));
     }
 
     @Test

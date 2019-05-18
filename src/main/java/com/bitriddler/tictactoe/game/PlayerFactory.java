@@ -6,6 +6,8 @@ import com.bitriddler.tictactoe.game.boardDisplay.BoardBasicViewStrategy;
 import com.bitriddler.tictactoe.game.boardDisplay.BoardViewStrategy;
 import com.bitriddler.tictactoe.game.moveParser.CommaMoveParserStrategy;
 import com.bitriddler.tictactoe.game.moveParser.MoveParserStrategy;
+import com.bitriddler.tictactoe.game.winner.StandardWinnerStrategy;
+import com.bitriddler.tictactoe.game.winner.WinnerStrategy;
 
 public class PlayerFactory {
     public Player makeHumanPlayer(GameBoard board, char symbol, GameIO gameIO) {
@@ -20,7 +22,8 @@ public class PlayerFactory {
         );
     }
     public Player makeAiPlayer(char symbol, Player[] hPlayers) {
-        MinMaxBestMoveStrategy bestMoveStrategy = new MinMaxBestMoveStrategy(hPlayers);
+        WinnerStrategy winnerStrategy = new StandardWinnerStrategy();
+        MinMaxBestMoveStrategy bestMoveStrategy = new MinMaxBestMoveStrategy(winnerStrategy, hPlayers);
         AiPlayer aiPlayer = new AiPlayer(
                 symbol,
                 bestMoveStrategy

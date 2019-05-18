@@ -3,6 +3,7 @@ package com.bitriddler.tictactoe.game.ai;
 import com.bitriddler.tictactoe.game.GameBoard;
 import com.bitriddler.tictactoe.game.GameMove;
 import com.bitriddler.tictactoe.game.Player;
+import com.bitriddler.tictactoe.game.winner.WinnerStrategy;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,14 +11,17 @@ import java.util.stream.Collectors;
 public class MinMaxBestMoveStrategy implements BestMoveStrategy {
     private Player[] humanPlayers;
     private Player aiPlayer;
+    private WinnerStrategy winnerStrategy;
 
-    public MinMaxBestMoveStrategy(Player[] humanPlayers) {
+    public MinMaxBestMoveStrategy(WinnerStrategy winnerStrategy, Player[] humanPlayers) {
         this.humanPlayers = humanPlayers;
+        this.winnerStrategy = winnerStrategy;
     }
 
-    public MinMaxBestMoveStrategy(Player[] humanPlayers, Player aiPlayer) {
+    public MinMaxBestMoveStrategy(WinnerStrategy winnerStrategy, Player[] humanPlayers, Player aiPlayer) {
         this.humanPlayers = humanPlayers;
         this.aiPlayer = aiPlayer;
+        this.winnerStrategy = winnerStrategy;
     }
 
     public void setAiPlayer(Player aiPlayer) {
@@ -27,57 +31,68 @@ public class MinMaxBestMoveStrategy implements BestMoveStrategy {
     int getPlayerScore(GameBoard board, Player player) {
         // Rate of growth when player is close to win
         // e.g. player have 4 in a row will have score 2^5 = 32 only for that row
-        int rate = 2;
         int count = 0;
         int size = board.size();
-        int reverseDiagCount = 1;
-        int diagCount = 1;
+        int reverseDiagCount = 0;
+        int diagCount = 0;
         boolean stopCountingReverseDiag = false;
         boolean stopCountingDiag = false;
         for (int i = 0; i < size; i++) {
-            int rowCount = 1;
-            int colCount = 1;
+            int rowCount = 0;
+            int colCount = 0;
             boolean stopCountingRows = false;
             boolean stopCountingCols = false;
             for (int j = 0; j < size; j++) {
                 if (!stopCountingRows && player.equals(board.getPlayerAt(i, j))) {
-                    rowCount*=rate;
+                    rowCount++;
+                    // Going to win, return maximum value
+                    if (rowCount == size)
+                        return Integer.MAX_VALUE;
                 }
                 // There's another player in row
                 else if (board.getPlayerAt(i, j) != null) {
-                    rowCount = 1;
+                    rowCount = 0;
                     stopCountingRows = true;
                 }
 
                 if (!stopCountingCols && player.equals(board.getPlayerAt(j, i))) {
-                    colCount*=rate;
+                    colCount++;
+                    // Going to win, return maximum value
+                    if (colCount == size)
+                        return Integer.MAX_VALUE;
                 }
                 // There's another player in col
                 else if (board.getPlayerAt(j, i) != null) {
-                    colCount = 1;
+                    colCount = 0;
                     stopCountingCols = true;
                 }
             }
 
-            count += rowCount + colCount - 2;
+            count += rowCount + colCount;
 
             if (!stopCountingDiag && player.equals(board.getPlayerAt(i, i))) {
-                diagCount*=rate;
+                diagCount++;
+                // Going to win, return maximum value
+                if (diagCount == size)
+                    return Integer.MAX_VALUE;
             // There's another player in diag
             } else if (board.getPlayerAt(i, i) != null) {
-                diagCount = 1;
+                diagCount = 0;
                 stopCountingDiag = true;
             }
 
             if (!stopCountingReverseDiag && player.equals(board.getPlayerAt(i, size-i-1))) {
-                reverseDiagCount*=rate;
+                reverseDiagCount++;
+                // Going to win, return maximum value
+                if (reverseDiagCount == size)
+                    return Integer.MAX_VALUE;
             // There's another player in reverse diag
             } else if (board.getPlayerAt(i, size-i-1) != null) {
-                reverseDiagCount = 1;
+                reverseDiagCount = 0;
                 stopCountingReverseDiag = true;
             }
         }
-        return count + reverseDiagCount + diagCount - 2;
+        return count + reverseDiagCount + diagCount;
     }
 
     int staticBoardEvaluation(GameBoard board) {
@@ -101,6 +116,19 @@ public class MinMaxBestMoveStrategy implements BestMoveStrategy {
         }).collect(Collectors.toList());
     }
 
+    Player[] getAllPlayers() {
+        Player[] players = new Player[humanPlayers.length + 1];
+        for (int i = 0; i < humanPlayers.length; i++) {
+            players[i] = humanPlayers[i];
+        }
+        players[humanPlayers.length] = aiPlayer;
+        return players;
+    }
+
+    boolean isGameFinished(GameBoard position) {
+        return winnerStrategy.getWinner(position, getAllPlayers()) != null;
+    }
+
     public GameMove findBestMove(GameBoard position, int depth) {
         List<GameBoard> possiblePositions = this.getAllPossiblePositions(aiPlayer, position);
         int maxEval = Integer.MIN_VALUE;
@@ -120,7 +148,7 @@ public class MinMaxBestMoveStrategy implements BestMoveStrategy {
 
     int minmax(GameBoard position, int depth, int humanPlayerNo) {
         // If depth is 0 or game is over
-        if (depth == 0 || position.isFilled()) {
+        if (depth == 0 || position.isFilled() || isGameFinished(position)) {
             return staticBoardEvaluation(position);
         }
 
