@@ -4,7 +4,6 @@ import com.bitriddler.tictactoe.game.boardDisplay.BoardViewStrategy;
 import com.bitriddler.tictactoe.game.events.GameEvent;
 import com.bitriddler.tictactoe.game.events.GameEventType;
 import com.bitriddler.tictactoe.game.exceptions.InvalidMoveCommandException;
-import com.bitriddler.tictactoe.game.exceptions.InvalidMoveException;
 import com.bitriddler.tictactoe.game.moveParser.MoveParserStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -104,7 +103,7 @@ class HumanPlayerTest {
     void testHandlingInvalidMoveException() throws Exception {
         HumanPlayer humanPlayer = this.createInstance('s');
         doReturn(humanPlayer).when(event).getPlayerToMove();
-        doThrow(InvalidMoveException.class)
+        doThrow(InvalidMoveCommandException.class)
                 .doReturn(move)
                 .when(moveParserStrategy)
                 .parse(any());
@@ -116,9 +115,9 @@ class HumanPlayerTest {
     void testRepeatingInputUntilValid() throws Exception {
         HumanPlayer humanPlayer = this.createInstance('s');
         doReturn(humanPlayer).when(event).getPlayerToMove();
-        doThrow(InvalidMoveException.class)
+        doThrow(InvalidMoveCommandException.class)
                 .doThrow(InvalidMoveCommandException.class)
-                .doThrow(InvalidMoveException.class)
+                .doThrow(InvalidMoveCommandException.class)
                 .doThrow(InvalidMoveCommandException.class)
                 .doReturn(move)
                 .when(moveParserStrategy)
