@@ -116,17 +116,8 @@ public class MinMaxBestMoveStrategy implements BestMoveStrategy {
         }).collect(Collectors.toList());
     }
 
-    Player[] getAllPlayers() {
-        Player[] players = new Player[humanPlayers.length + 1];
-        for (int i = 0; i < humanPlayers.length; i++) {
-            players[i] = humanPlayers[i];
-        }
-        players[humanPlayers.length] = aiPlayer;
-        return players;
-    }
-
-    boolean isGameFinished(GameBoard position) {
-        return winnerStrategy.getWinner(position, getAllPlayers()) != null;
+    boolean isGameFinished(GameBoard position, Player player) {
+        return winnerStrategy.getWinner(position, new Player[]{player}) != null;
     }
 
     public GameMove findBestMove(GameBoard position, int depth) {
@@ -135,7 +126,7 @@ public class MinMaxBestMoveStrategy implements BestMoveStrategy {
         GameBoard bestPosition = null;
 
         for (GameBoard newPosition: possiblePositions) {
-            int eval = minmax(newPosition, depth - 1, humanPlayers.length - 1);
+            int eval = minmax(newPosition, depth - 1, humanPlayers.length - 1, aiPlayer);
             if (eval > maxEval) {
                 maxEval = eval;
                 bestPosition = newPosition;
@@ -146,9 +137,9 @@ public class MinMaxBestMoveStrategy implements BestMoveStrategy {
         return position.getMoveToReach(bestPosition);
     }
 
-    int minmax(GameBoard position, int depth, int humanPlayerNo) {
+    int minmax(GameBoard position, int depth, int humanPlayerNo, Player lastPlayerToPlay) {
         // If depth is 0 or game is over
-        if (depth == 0 || position.isFilled() || isGameFinished(position)) {
+        if (depth == 0 || position.isFilled() || isGameFinished(position, lastPlayerToPlay)) {
             return staticBoardEvaluation(position);
         }
 
@@ -156,7 +147,7 @@ public class MinMaxBestMoveStrategy implements BestMoveStrategy {
             List<GameBoard> possiblePositions = this.getAllPossiblePositions(aiPlayer, position);
             int maxEval = Integer.MIN_VALUE;
             for (GameBoard newPosition: possiblePositions) {
-                int eval = minmax(newPosition, depth - 1, humanPlayers.length - 1);
+                int eval = minmax(newPosition, depth - 1, humanPlayers.length - 1, aiPlayer);
                 maxEval = Math.max(maxEval, eval);
             }
             return maxEval;
@@ -165,7 +156,7 @@ public class MinMaxBestMoveStrategy implements BestMoveStrategy {
 
             int minEval = Integer.MAX_VALUE;
             for (GameBoard newPosition: possiblePositions) {
-                int eval = minmax(newPosition, depth - 1, humanPlayerNo - 1);
+                int eval = minmax(newPosition, depth - 1, humanPlayerNo - 1, humanPlayers[humanPlayerNo]);
                 minEval = Math.min(minEval, eval);
             }
 
