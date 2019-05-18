@@ -46,10 +46,10 @@ class SocketConnectionHandler implements Runnable {
     }
 
     private Player getAiPlayer(TicTacToe game) {
-        ArrayList<Player> hPlayers = game.getPlayers();
+        Player[] hPlayers = game.getPlayers();
         return playerFactory.makeAiPlayer(
                 gameConfig.getAiSymbol(),
-                hPlayers.toArray(new Player[hPlayers.size()])
+                hPlayers
         );
     }
 

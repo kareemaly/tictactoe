@@ -9,10 +9,9 @@ import com.bitriddler.tictactoe.game.exceptions.GameFullException;
 import com.bitriddler.tictactoe.game.exceptions.InvalidMoveException;
 import com.bitriddler.tictactoe.game.winner.WinnerStrategy;
 
-import java.util.ArrayList;
-
 public class TicTacToe {
-    private ArrayList<Player> players = new ArrayList<>();
+    private Player[] players;
+    private int numberOfConnectedPlayers = 0;
     private GameBoard board;
     private int playerToMoveIndex = 0;
     private WinnerStrategy winnerStrategy;
@@ -26,18 +25,19 @@ public class TicTacToe {
         this.winnerStrategy = winnerStrategy;
         this.board = new GameBoard(boardSize);
         this.gameEventPublisher = new GameEventPublisher();
+        players = new Player[maxNoOfPlayers];
     }
 
     public GameBoard getBoard() {
         return board;
     }
 
-    public ArrayList<Player> getPlayers() {
+    public Player[] getPlayers() {
         return players;
     }
 
     public int getNumberOfConnectedPlayers() {
-        return players.size();
+        return numberOfConnectedPlayers;
     }
 
     public void addSubscriberFor(GameEventType eventType, GameEventSubscriber subscriber) {
@@ -49,21 +49,22 @@ public class TicTacToe {
     }
 
     public Player getPlayerToMove() {
-        return players.get(playerToMoveIndex);
+        return players[playerToMoveIndex];
     }
 
     public void addPlayer(Player player) throws GameFullException {
         if (isGameFull()) {
             throw new GameFullException();
         }
-        players.add(player);
+        players[numberOfConnectedPlayers] = player;
+        numberOfConnectedPlayers++;
         if (isGameFull()) {
             gameEventPublisher.publishEvent(GameEventType.GAME_READY, new GameEvent(this));
         }
     }
 
     public boolean isGameFull() {
-        return players.size() == maxNoOfPlayers;
+        return numberOfConnectedPlayers == maxNoOfPlayers;
     }
 
     private void validateMove(Player player, GameMove move) throws InvalidMoveException {
@@ -83,7 +84,7 @@ public class TicTacToe {
     public void makeMove(Player player, GameMove move) throws InvalidMoveException {
         this.validateMove(player, move);
         board.setPlayerAt(move.getX(), move.getY(), player);
-        playerToMoveIndex = (playerToMoveIndex+1) % players.size();
+        playerToMoveIndex = (playerToMoveIndex+1) % numberOfConnectedPlayers;
 
         Player winner = getWinner();
 

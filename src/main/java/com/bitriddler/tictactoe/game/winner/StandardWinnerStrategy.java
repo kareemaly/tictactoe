@@ -3,11 +3,9 @@ package com.bitriddler.tictactoe.game.winner;
 import com.bitriddler.tictactoe.game.GameBoard;
 import com.bitriddler.tictactoe.game.Player;
 
-import java.util.ArrayList;
-
 public class StandardWinnerStrategy implements WinnerStrategy {
     @Override
-    public Player getWinner(GameBoard board, ArrayList<Player> players) {
+    public Player getWinner(GameBoard board, Player[] players) {
         int countRow = 0;
         int countCol = 0;
         int countDiag = 0;
