@@ -2,8 +2,8 @@ package com.bitriddler.tictactoe;
 
 import com.bitriddler.tictactoe.game.*;
 import com.bitriddler.tictactoe.game.exceptions.GameFullException;
-
-import java.util.ArrayList;
+import com.bitriddler.tictactoe.game.players.Player;
+import com.bitriddler.tictactoe.game.players.PlayerFactory;
 
 class SocketConnectionHandler implements Runnable {
     private PlayerFactory playerFactory;

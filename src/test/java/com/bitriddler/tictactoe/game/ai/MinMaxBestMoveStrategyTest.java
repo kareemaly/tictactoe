@@ -4,7 +4,7 @@ import static org.mockito.Mockito.*;
 
 import com.bitriddler.tictactoe.game.GameBoard;
 import com.bitriddler.tictactoe.game.GameMove;
-import com.bitriddler.tictactoe.game.Player;
+import com.bitriddler.tictactoe.game.players.Player;
 import com.bitriddler.tictactoe.game.winner.WinnerStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

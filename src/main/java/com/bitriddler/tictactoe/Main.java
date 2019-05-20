@@ -1,6 +1,7 @@
 package com.bitriddler.tictactoe;
 
 import com.bitriddler.tictactoe.game.*;
+import com.bitriddler.tictactoe.game.players.PlayerFactory;
 
 import java.io.*;
 import java.net.ServerSocket;

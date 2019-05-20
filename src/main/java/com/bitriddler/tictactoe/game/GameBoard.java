@@ -1,5 +1,7 @@
 package com.bitriddler.tictactoe.game;
 
+import com.bitriddler.tictactoe.game.players.Player;
+
 import java.util.ArrayList;
 
 public class GameBoard {

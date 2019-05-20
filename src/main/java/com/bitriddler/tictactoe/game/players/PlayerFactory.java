@@ -1,6 +1,7 @@
-package com.bitriddler.tictactoe.game;
+package com.bitriddler.tictactoe.game.players;
 
-import com.bitriddler.tictactoe.game.ai.AiPlayer;
+import com.bitriddler.tictactoe.game.GameBoard;
+import com.bitriddler.tictactoe.game.GameIO;
 import com.bitriddler.tictactoe.game.ai.MinMaxBestMoveStrategy;
 import com.bitriddler.tictactoe.game.boardDisplay.BoardBasicViewStrategy;
 import com.bitriddler.tictactoe.game.boardDisplay.BoardViewStrategy;

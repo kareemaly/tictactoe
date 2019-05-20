@@ -1,4 +1,4 @@
-package com.bitriddler.tictactoe.game;
+package com.bitriddler.tictactoe.game.players;
 
 import com.bitriddler.tictactoe.game.events.GameEventSubscriber;
 

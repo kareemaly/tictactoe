@@ -2,7 +2,7 @@ package com.bitriddler.tictactoe.game.ai;
 
 import com.bitriddler.tictactoe.game.GameBoard;
 import com.bitriddler.tictactoe.game.GameMove;
-import com.bitriddler.tictactoe.game.Player;
+import com.bitriddler.tictactoe.game.players.Player;
 import com.bitriddler.tictactoe.game.winner.WinnerStrategy;
 
 import java.util.List;

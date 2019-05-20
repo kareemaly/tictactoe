@@ -7,6 +7,7 @@ import com.bitriddler.tictactoe.game.events.GameEventType;
 import com.bitriddler.tictactoe.game.exceptions.BoardSizeInvalidException;
 import com.bitriddler.tictactoe.game.exceptions.GameFullException;
 import com.bitriddler.tictactoe.game.exceptions.InvalidMoveException;
+import com.bitriddler.tictactoe.game.players.Player;
 import com.bitriddler.tictactoe.game.winner.WinnerStrategy;
 
 public class TicTacToe {

@@ -1,10 +1,13 @@
-package com.bitriddler.tictactoe.game;
+package com.bitriddler.tictactoe.game.players;
 
+import com.bitriddler.tictactoe.game.GameIO;
+import com.bitriddler.tictactoe.game.GameMove;
 import com.bitriddler.tictactoe.game.boardDisplay.BoardViewStrategy;
 import com.bitriddler.tictactoe.game.events.GameEvent;
 import com.bitriddler.tictactoe.game.events.GameEventType;
 import com.bitriddler.tictactoe.game.exceptions.InvalidMoveCommandException;
 import com.bitriddler.tictactoe.game.moveParser.MoveParserStrategy;
+import com.bitriddler.tictactoe.game.players.HumanPlayer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

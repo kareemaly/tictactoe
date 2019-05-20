@@ -1,5 +1,7 @@
-package com.bitriddler.tictactoe.game;
+package com.bitriddler.tictactoe.game.players;
 
+import com.bitriddler.tictactoe.game.GameIO;
+import com.bitriddler.tictactoe.game.GameMove;
 import com.bitriddler.tictactoe.game.boardDisplay.BoardViewStrategy;
 import com.bitriddler.tictactoe.game.events.GameEvent;
 import com.bitriddler.tictactoe.game.events.GameEventType;

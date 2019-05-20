@@ -1,7 +1,7 @@
 package com.bitriddler.tictactoe.game.boardDisplay;
 
 import com.bitriddler.tictactoe.game.GameBoard;
-import com.bitriddler.tictactoe.game.Player;
+import com.bitriddler.tictactoe.game.players.Player;
 
 public class BoardBasicViewStrategy implements BoardViewStrategy {
 
