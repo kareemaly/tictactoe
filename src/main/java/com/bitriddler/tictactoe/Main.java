@@ -31,7 +31,8 @@ public class Main {
         }
 
         // Initialize factories and repository instances for game and player.
-        TicTacToeRepository gameRepository = new TicTacToeRepository(new TicTacToeFactory(), gameConfig);
+        TicTacToeFactory gameFactory = new TicTacToeFactory();
+        TicTacToeRepository gameRepository = new TicTacToeRepository();
         PlayerFactory playerFactory = new PlayerFactory();
 
         try {
@@ -42,7 +43,13 @@ public class Main {
                 ClientSocketConnection clientSocketConnection = new ClientSocketConnection(serverSocket.accept());
 
                 // Run a thread to handle socket connection
-                Runnable handler = new SocketConnectionHandler(clientSocketConnection, playerFactory, gameRepository, gameConfig);
+                Runnable handler = new SocketConnectionHandler(
+                        clientSocketConnection,
+                        playerFactory,
+                        gameRepository,
+                        gameFactory,
+                        gameConfig
+                );
                 new Thread(handler).start();
             }
         } catch (IOException e) {

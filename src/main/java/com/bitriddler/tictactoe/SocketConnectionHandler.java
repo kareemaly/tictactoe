@@ -1,6 +1,7 @@
 package com.bitriddler.tictactoe;
 
 import com.bitriddler.tictactoe.game.*;
+import com.bitriddler.tictactoe.game.exceptions.BoardSizeInvalidException;
 import com.bitriddler.tictactoe.game.exceptions.GameFullException;
 import com.bitriddler.tictactoe.game.players.Player;
 import com.bitriddler.tictactoe.game.players.PlayerFactory;
@@ -8,27 +9,45 @@ import com.bitriddler.tictactoe.game.players.PlayerFactory;
 class SocketConnectionHandler implements Runnable {
     private PlayerFactory playerFactory;
     private TicTacToeRepository gameRepository;
+    private TicTacToeFactory gameFactory;
     private GameConfig gameConfig;
     private ClientSocketConnection clientSocketConnection;
 
-    SocketConnectionHandler(ClientSocketConnection clientSocketConnection, PlayerFactory playerFactory, TicTacToeRepository gameRepository, GameConfig gameConfig) {
+    SocketConnectionHandler(
+            ClientSocketConnection clientSocketConnection,
+            PlayerFactory playerFactory,
+            TicTacToeRepository gameRepository,
+            TicTacToeFactory gameFactory,
+            GameConfig gameConfig
+    ) {
         this.clientSocketConnection = clientSocketConnection;
         this.playerFactory = playerFactory;
         this.gameRepository = gameRepository;
+        this.gameFactory = gameFactory;
         this.gameConfig = gameConfig;
     }
 
     private TicTacToe initializeGame() throws GameFullException {
-        TicTacToe game = gameRepository.getOrCreateGame();
+        TicTacToe currentGame = gameRepository.getLastAddedGame();
 
-        // New game then add the AI player
-        if (game.getNumberOfConnectedPlayers() == 0) {
-            Player aiPlayer = this.getAiPlayer(game);
-            game.addSubscriberForAllEvents(aiPlayer);
-            game.addPlayer(aiPlayer);
+        try {
+            // Create a new game
+            if (currentGame == null || currentGame.isGameFull()) {
+                currentGame = gameFactory.build(gameConfig.getBoardSize());
+                gameRepository.addGame(currentGame);
+            }
+        } catch (BoardSizeInvalidException e) {
+            e.printStackTrace();
         }
 
-        return game;
+        // New game then add the AI player
+        if (currentGame.getNumberOfConnectedPlayers() == 0) {
+            Player aiPlayer = this.getAiPlayer(currentGame);
+            currentGame.addSubscriberForAllEvents(aiPlayer);
+            currentGame.addPlayer(aiPlayer);
+        }
+
+        return currentGame;
     }
 
     private Player initializePlayer(TicTacToe game) {
