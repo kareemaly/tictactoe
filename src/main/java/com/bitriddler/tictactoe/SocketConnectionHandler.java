@@ -34,7 +34,7 @@ class SocketConnectionHandler implements Runnable {
             // Create a new game
             if (currentGame == null || currentGame.isGameFull()) {
                 currentGame = gameFactory.build(gameConfig.getBoardSize());
-                gameRepository.addGame(currentGame);
+                gameRepository.addGame(new TicTacToeUUID(), currentGame);
             }
         } catch (BoardSizeInvalidException e) {
             e.printStackTrace();

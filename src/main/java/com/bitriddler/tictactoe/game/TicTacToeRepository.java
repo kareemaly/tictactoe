@@ -1,18 +1,18 @@
 package com.bitriddler.tictactoe.game;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class TicTacToeRepository {
-    private ArrayList<TicTacToe> games = new ArrayList<>();
+    private HashMap<TicTacToeID, TicTacToe> games = new HashMap<>();
     private TicTacToe lastAddedGame;
 
     public TicTacToe getLastAddedGame() {
         return lastAddedGame;
     }
 
-    public TicTacToe addGame(TicTacToe game) {
+    public TicTacToe addGame(TicTacToeID id, TicTacToe game) {
         lastAddedGame = game;
-        games.add(lastAddedGame);
+        games.put(id, lastAddedGame);
         return lastAddedGame;
     }
 }
