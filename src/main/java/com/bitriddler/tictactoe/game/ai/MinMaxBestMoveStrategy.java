@@ -9,23 +9,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MinMaxBestMoveStrategy implements BestMoveStrategy {
-    private Player[] humanPlayers;
-    private Player aiPlayer;
     private WinnerStrategy winnerStrategy;
 
-    public MinMaxBestMoveStrategy(WinnerStrategy winnerStrategy, Player[] humanPlayers) {
-        this.humanPlayers = humanPlayers;
+    public MinMaxBestMoveStrategy(WinnerStrategy winnerStrategy) {
         this.winnerStrategy = winnerStrategy;
-    }
-
-    public MinMaxBestMoveStrategy(WinnerStrategy winnerStrategy, Player[] humanPlayers, Player aiPlayer) {
-        this.humanPlayers = humanPlayers;
-        this.aiPlayer = aiPlayer;
-        this.winnerStrategy = winnerStrategy;
-    }
-
-    public void setAiPlayer(Player aiPlayer) {
-        this.aiPlayer = aiPlayer;
     }
 
     int getPlayerScore(GameBoard board, Player player) {
@@ -95,19 +82,19 @@ public class MinMaxBestMoveStrategy implements BestMoveStrategy {
         return count + reverseDiagCount + diagCount;
     }
 
-    int staticBoardEvaluation(GameBoard board) {
-        int aiScore = getPlayerScore(board, aiPlayer);
+    int staticBoardEvaluation(Player[] opponentPlayers, Player player, GameBoard board) {
+        int playerScore = getPlayerScore(board, player);
 
         // Calculating total human score against the ai player
         // will make the ai player assume the worst which is, both humans
         // are playing to make him lose
-        int totalHumanScore = 0;
+        int totalOpponentScore = 0;
 
-        for (Player humanPlayer: humanPlayers) {
-            totalHumanScore += getPlayerScore(board, humanPlayer);
+        for (Player opponentPlayer: opponentPlayers) {
+            totalOpponentScore += getPlayerScore(board, opponentPlayer);
         }
 
-        return aiScore - totalHumanScore;
+        return playerScore - totalOpponentScore;
     }
 
     List<GameBoard> getAllPossiblePositions(Player player, GameBoard position) {
@@ -120,13 +107,13 @@ public class MinMaxBestMoveStrategy implements BestMoveStrategy {
         return winnerStrategy.getWinner(position, new Player[]{player}) != null;
     }
 
-    public GameMove findBestMove(GameBoard position, int depth) {
-        List<GameBoard> possiblePositions = this.getAllPossiblePositions(aiPlayer, position);
+    public GameMove findBestMove(Player[] opponentPlayers, Player player, GameBoard position, int depth) {
+        List<GameBoard> possiblePositions = this.getAllPossiblePositions(player, position);
         int maxEval = Integer.MIN_VALUE;
         GameBoard bestPosition = null;
 
         for (GameBoard newPosition: possiblePositions) {
-            int eval = minmax(newPosition, depth - 1, humanPlayers.length - 1, aiPlayer);
+            int eval = minmax(opponentPlayers, player, newPosition, depth - 1, opponentPlayers.length - 1, player);
             if (eval > maxEval) {
                 maxEval = eval;
                 bestPosition = newPosition;
@@ -137,26 +124,40 @@ public class MinMaxBestMoveStrategy implements BestMoveStrategy {
         return position.getMoveToReach(bestPosition);
     }
 
-    int minmax(GameBoard position, int depth, int humanPlayerNo, Player lastPlayerToPlay) {
+    int minmax(Player[] opponentPlayers, Player player, GameBoard position, int depth, int opponentPlayerNo, Player lastPlayerToPlay) {
         // If depth is 0 or game is over
         if (depth == 0 || position.isFilled() || isGameFinished(position, lastPlayerToPlay)) {
-            return staticBoardEvaluation(position);
+            return staticBoardEvaluation(opponentPlayers, player, position);
         }
 
-        if (humanPlayerNo < 0) {
-            List<GameBoard> possiblePositions = this.getAllPossiblePositions(aiPlayer, position);
+        if (opponentPlayerNo < 0) {
+            List<GameBoard> possiblePositions = this.getAllPossiblePositions(player, position);
             int maxEval = Integer.MIN_VALUE;
             for (GameBoard newPosition: possiblePositions) {
-                int eval = minmax(newPosition, depth - 1, humanPlayers.length - 1, aiPlayer);
+                int eval = minmax(
+                        opponentPlayers,
+                        player,
+                        newPosition,
+                        depth - 1,
+                        opponentPlayers.length - 1,
+                        player
+                );
                 maxEval = Math.max(maxEval, eval);
             }
             return maxEval;
         } else {
-            List<GameBoard> possiblePositions = this.getAllPossiblePositions(humanPlayers[humanPlayerNo], position);
+            List<GameBoard> possiblePositions = this.getAllPossiblePositions(opponentPlayers[opponentPlayerNo], position);
 
             int minEval = Integer.MAX_VALUE;
             for (GameBoard newPosition: possiblePositions) {
-                int eval = minmax(newPosition, depth - 1, humanPlayerNo - 1, humanPlayers[humanPlayerNo]);
+                int eval = minmax(
+                        opponentPlayers,
+                        player,
+                        newPosition,
+                        depth - 1,
+                        opponentPlayerNo - 1,
+                        opponentPlayers[opponentPlayerNo]
+                );
                 minEval = Math.min(minEval, eval);
             }
 

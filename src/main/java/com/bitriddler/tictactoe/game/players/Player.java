@@ -1,8 +1,6 @@
 package com.bitriddler.tictactoe.game.players;
 
-import com.bitriddler.tictactoe.game.events.GameEventSubscriber;
-
-public abstract class Player implements GameEventSubscriber {
+public abstract class Player {
     private char symbol;
 
     public Player(char symbol) {

@@ -10,6 +10,9 @@ import com.bitriddler.tictactoe.game.exceptions.InvalidMoveException;
 import com.bitriddler.tictactoe.game.players.Player;
 import com.bitriddler.tictactoe.game.winner.WinnerStrategy;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public class TicTacToe {
     private Player[] players;
     private int numberOfConnectedPlayers = 0;
@@ -47,6 +50,17 @@ public class TicTacToe {
 
     public void addSubscriberForAllEvents(GameEventSubscriber subscriber) {
         gameEventPublisher.addSubscriberForAllEvents(subscriber);
+    }
+
+    public Player[] getPlayersExcept(Player player) {
+        Player[] opponentPlayers = new Player[numberOfConnectedPlayers - 1];
+        int j = 0;
+        for (int i = 0; i < numberOfConnectedPlayers; i++) {
+            if (! players[i].equals(player)) {
+                opponentPlayers[j++] = players[i];
+            }
+        }
+        return opponentPlayers;
     }
 
     public Player getPlayerToMove() {

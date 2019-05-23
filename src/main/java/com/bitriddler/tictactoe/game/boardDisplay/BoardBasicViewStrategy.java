@@ -5,13 +5,7 @@ import com.bitriddler.tictactoe.game.players.Player;
 
 public class BoardBasicViewStrategy implements BoardViewStrategy {
 
-    private GameBoard board;
-
-    public BoardBasicViewStrategy(GameBoard board) {
-        this.board = board;
-    }
-
-    private String getRowString(int rowNo) {
+    private String getRowString(GameBoard board, int rowNo) {
         String result = "";
         for (int j = 0; j < board.size(); j++) {
             if (j == 0) {
@@ -28,7 +22,7 @@ public class BoardBasicViewStrategy implements BoardViewStrategy {
         return result;
     }
 
-    private String getLineSeparator() {
+    private String getLineSeparator(GameBoard board) {
         return "\n" + String.format(
                 String.format("%%%ds", board.size()*4+1),
                 " "
@@ -36,13 +30,13 @@ public class BoardBasicViewStrategy implements BoardViewStrategy {
     }
 
     @Override
-    public String get() {
+    public String get(GameBoard board) {
         String result = "";
         int size = board.size();
         for (int i = 0; i < size; i++) {
-            result += this.getRowString(i);
+            result += this.getRowString(board, i);
             if (i != size - 1) {
-                result += this.getLineSeparator();
+                result += this.getLineSeparator(board);
             }
         }
         return result;

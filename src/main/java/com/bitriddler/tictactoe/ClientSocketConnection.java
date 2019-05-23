@@ -1,14 +1,12 @@
 package com.bitriddler.tictactoe;
 
-import com.bitriddler.tictactoe.game.GameIO;
-
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-class ClientSocketConnection implements GameIO {
+class ClientSocketConnection {
     private Socket socket;
     private PrintWriter writer;
     private Scanner scanner;
@@ -31,18 +29,15 @@ class ClientSocketConnection implements GameIO {
         }
     }
 
-    @Override
-    public String input() {
+    String input() {
         return scanner.nextLine();
     }
 
-    @Override
-    public void output(String str) {
+    void output(String str) {
         writer.println(str);
     }
 
-    @Override
-    public void disconnect() {
+    void disconnect() {
         try {
             socket.close();
         } catch (IOException e) {

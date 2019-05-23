@@ -26,4 +26,8 @@ public class GameEvent {
     public Player getPlayerToMove() {
         return this.game.getPlayerToMove();
     }
+
+    public Player[] getOpponentPlayers() {
+        return this.game.getPlayersExcept(this.getPlayerToMove());
+    }
 }
