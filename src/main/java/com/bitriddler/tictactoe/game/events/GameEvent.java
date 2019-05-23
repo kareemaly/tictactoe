@@ -2,6 +2,7 @@ package com.bitriddler.tictactoe.game.events;
 
 import com.bitriddler.tictactoe.game.*;
 import com.bitriddler.tictactoe.game.exceptions.InvalidMoveException;
+import com.bitriddler.tictactoe.game.players.Player;
 
 public class GameEvent {
     private TicTacToe game;
@@ -24,5 +25,9 @@ public class GameEvent {
 
     public Player getPlayerToMove() {
         return this.game.getPlayerToMove();
+    }
+
+    public Player[] getOpponentPlayers() {
+        return this.game.getPlayersExcept(this.getPlayerToMove());
     }
 }

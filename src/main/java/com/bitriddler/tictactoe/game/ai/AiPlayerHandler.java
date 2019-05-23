@@ -2,19 +2,21 @@ package com.bitriddler.tictactoe.game.ai;
 
 import com.bitriddler.tictactoe.game.GameBoard;
 import com.bitriddler.tictactoe.game.GameMove;
-import com.bitriddler.tictactoe.game.Player;
 import com.bitriddler.tictactoe.game.events.GameEvent;
+import com.bitriddler.tictactoe.game.events.GameEventSubscriber;
 import com.bitriddler.tictactoe.game.events.GameEventType;
 import com.bitriddler.tictactoe.game.exceptions.InvalidMoveException;
+import com.bitriddler.tictactoe.game.players.Player;
 
 import java.util.ArrayList;
 
-public class AiPlayer extends Player {
+public class AiPlayerHandler implements GameEventSubscriber {
 
+    private Player aiPlayer;
     private BestMoveStrategy bestMoveStrategy;
 
-    public AiPlayer(char symbol, BestMoveStrategy bestMoveStrategy) {
-        super(symbol);
+    public AiPlayerHandler(Player aiPlayer, BestMoveStrategy bestMoveStrategy) {
+        this.aiPlayer = aiPlayer;
         this.bestMoveStrategy = bestMoveStrategy;
     }
 
@@ -29,7 +31,7 @@ public class AiPlayer extends Player {
             if (simulateThinking) {
                 Thread.sleep(100);
             }
-            event.makeMove(this, getRandomMove(event.getBoard()));
+            event.makeMove(aiPlayer, getRandomMove(event.getBoard()));
         } catch (InvalidMoveException e) {
             e.printStackTrace();
             System.exit(1);
@@ -58,17 +60,22 @@ public class AiPlayer extends Player {
     }
 
     private void handleGameStillOnEvents(GameEvent event) {
-        if (this.equals(event.getPlayerToMove())) {
+        if (aiPlayer.equals(event.getPlayerToMove())) {
             // First move to make need to be random
             if (event.getBoard().isEmpty()) {
                 makeRandomMove(event, true);
                 return;
             }
 
-            GameMove gameMove = bestMoveStrategy.findBestMove(event.getBoard(), getBestDepth(event.getBoard().size()));
+            GameMove gameMove = bestMoveStrategy.findBestMove(
+                    event.getOpponentPlayers(),
+                    event.getPlayerToMove(),
+                    event.getBoard(),
+                    getBestDepth(event.getBoard().size())
+            );
 
             try {
-                event.makeMove(this, gameMove);
+                event.makeMove(aiPlayer, gameMove);
             } catch(InvalidMoveException e) {
                 // algorithm failed, need to report that and make a random move
                 // to keep the game going.
@@ -87,5 +94,4 @@ public class AiPlayer extends Player {
                 break;
         }
     }
-
 }

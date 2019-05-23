@@ -1,84 +1,90 @@
 package com.bitriddler.tictactoe;
 
 import com.bitriddler.tictactoe.game.*;
-import com.bitriddler.tictactoe.game.exceptions.GameFullException;
+import com.bitriddler.tictactoe.game.boardDisplay.BoardViewStrategy;
+import com.bitriddler.tictactoe.game.events.GameEvent;
+import com.bitriddler.tictactoe.game.events.GameEventSubscriber;
+import com.bitriddler.tictactoe.game.events.GameEventType;
+import com.bitriddler.tictactoe.game.exceptions.InvalidMoveCommandException;
+import com.bitriddler.tictactoe.game.exceptions.InvalidMoveException;
+import com.bitriddler.tictactoe.game.moveParser.MoveParserStrategy;
+import com.bitriddler.tictactoe.game.players.Player;
 
-import java.util.ArrayList;
-
-class SocketConnectionHandler implements Runnable {
-    private PlayerFactory playerFactory;
-    private TicTacToeRepository gameRepository;
-    private GameConfig gameConfig;
+class SocketConnectionHandler implements GameEventSubscriber {
     private ClientSocketConnection clientSocketConnection;
+    private TicTacToe game;
+    private Player player;
+    private MoveParserStrategy moveParserStrategy;
+    private BoardViewStrategy boardViewStrategy;
 
-    SocketConnectionHandler(ClientSocketConnection clientSocketConnection, PlayerFactory playerFactory, TicTacToeRepository gameRepository, GameConfig gameConfig) {
+    public SocketConnectionHandler(
+            ClientSocketConnection clientSocketConnection,
+            TicTacToe game,
+            Player player,
+            MoveParserStrategy moveParserStrategy,
+            BoardViewStrategy boardViewStrategy
+    ) {
         this.clientSocketConnection = clientSocketConnection;
-        this.playerFactory = playerFactory;
-        this.gameRepository = gameRepository;
-        this.gameConfig = gameConfig;
+        this.game = game;
+        this.player = player;
+        this.moveParserStrategy = moveParserStrategy;
+        this.boardViewStrategy = boardViewStrategy;
     }
 
-    private TicTacToe initializeGame() throws GameFullException {
-        TicTacToe game = gameRepository.getOrCreateGame();
-
-        // New game then add the AI player
-        if (game.getNumberOfConnectedPlayers() == 0) {
-            Player aiPlayer = this.getAiPlayer(game);
-            game.addSubscriberForAllEvents(aiPlayer);
-            game.addPlayer(aiPlayer);
-        }
-
-        return game;
+    Player getPlayer() {
+        return player;
     }
 
-    private Player initializePlayer(TicTacToe game) {
-        // Get player symbol from configurations
-        char playerSymbol = gameConfig.getPlayerSymbolAt(
-                game.getNumberOfConnectedPlayers() - 1
-        );
-
-        // Create human player that stream to console
-        return playerFactory.makeHumanPlayer(
-                game.getBoard(),
-                playerSymbol,
-                clientSocketConnection
-        );
-    }
-
-    private Player getAiPlayer(TicTacToe game) {
-        Player[] hPlayers = game.getPlayers();
-        return playerFactory.makeAiPlayer(
-                gameConfig.getAiSymbol(),
-                hPlayers
-        );
-    }
-
-    @Override
-    public void run() {
-        TicTacToe game;
-        Player player;
-
+    private void askToMakeMove(GameEvent event) {
         try {
-            game = this.initializeGame();
-            player = this.initializePlayer(game);
-            // Listen for all game events
-            game.addSubscriberForAllEvents(player);
-            // Add player to game
-            game.addPlayer(player);
-        } catch (GameFullException e) {
-            // This exception should never happen since we checked if game is full before hand.
-            clientSocketConnection.output("Game is full");
-            clientSocketConnection.disconnect();
+            GameMove move = moveParserStrategy.parse(clientSocketConnection.input());
+            event.makeMove(player, move);
+        } catch (InvalidMoveCommandException e) {
+            clientSocketConnection.output("Command must be in this format: `x,y`");
+            askToMakeMove(event);
+        } catch (InvalidMoveException e) {
+            clientSocketConnection.output(e.getMessage());
+            askToMakeMove(event);
+        }
+    }
+
+    private void handleGameStillOnEvents(GameEvent event) {
+        clientSocketConnection.output(boardViewStrategy.get(game.getBoard()));
+        Player playerToMove = event.getPlayerToMove();
+
+        if (!player.equals(playerToMove)) {
+            clientSocketConnection.output(String.format("Waiting for player (%c) to move", playerToMove.getSymbol()));
             return;
         }
 
-        // Give some feedback to the user
-        clientSocketConnection.output("Connected successfully");
+        clientSocketConnection.output("Your Turn...");
+        askToMakeMove(event);
+    }
 
-        if (!game.isGameFull()) {
-            clientSocketConnection.output("Waiting for players..");
+    private void handleGameEndedEvent(GameEvent event) {
+        clientSocketConnection.output(boardViewStrategy.get(game.getBoard()));
+        // No winner
+        if (event.getWinner() == null) {
+            clientSocketConnection.output("It's a draw...");
         }
+        else if (event.getWinner().equals(this)) {
+            clientSocketConnection.output("** winner winner chicken dinner **");
+        } else {
+            clientSocketConnection.output("-- better luck next time :'( --");
+        }
+        clientSocketConnection.disconnect();
+    }
 
-        System.out.println("New client connected");
+    @Override
+    public void handleEvent(GameEventType eventType, GameEvent event) {
+        switch (eventType) {
+            case GAME_READY:
+            case PLAYER_MOVED:
+                this.handleGameStillOnEvents(event);
+                break;
+            case GAME_ENDED:
+                this.handleGameEndedEvent(event);
+                break;
+        }
     }
 }

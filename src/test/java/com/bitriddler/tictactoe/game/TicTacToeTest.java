@@ -1,10 +1,9 @@
 package com.bitriddler.tictactoe.game;
 
-import static org.mockito.Mockito.*;
-
 import com.bitriddler.tictactoe.game.exceptions.BoardSizeInvalidException;
 import com.bitriddler.tictactoe.game.exceptions.GameFullException;
 import com.bitriddler.tictactoe.game.exceptions.InvalidMoveException;
+import com.bitriddler.tictactoe.game.players.Player;
 import com.bitriddler.tictactoe.game.winner.WinnerStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

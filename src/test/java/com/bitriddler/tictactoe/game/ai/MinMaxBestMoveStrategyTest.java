@@ -4,7 +4,7 @@ import static org.mockito.Mockito.*;
 
 import com.bitriddler.tictactoe.game.GameBoard;
 import com.bitriddler.tictactoe.game.GameMove;
-import com.bitriddler.tictactoe.game.Player;
+import com.bitriddler.tictactoe.game.players.Player;
 import com.bitriddler.tictactoe.game.winner.WinnerStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class MinMaxBestMoveStrategyTest {
     WinnerStrategy winnerStrategy;
 
     MinMaxBestMoveStrategy createInstance() {
-        return spy(new MinMaxBestMoveStrategy(winnerStrategy, new Player[]{p1, p2}, ai));
+        return spy(new MinMaxBestMoveStrategy(winnerStrategy));
     }
 
     @BeforeEach
@@ -143,7 +143,7 @@ class MinMaxBestMoveStrategyTest {
     @Test
     void testEvaluationGettingAllPlayersScores() {
         MinMaxBestMoveStrategy strategy = createInstance();
-        strategy.staticBoardEvaluation(new GameBoard(3));
+        strategy.staticBoardEvaluation(new Player[]{p1, p2}, ai, new GameBoard(3));
         verify(strategy, times(3)).getPlayerScore(any(), any());
     }
 
@@ -154,7 +154,7 @@ class MinMaxBestMoveStrategyTest {
                 .doReturn(4)
                 .doReturn(5)
                 .when(strategy).getPlayerScore(any(), any());
-        int value = strategy.staticBoardEvaluation(new GameBoard(3));
+        int value = strategy.staticBoardEvaluation(new Player[]{p1, p2}, ai, new GameBoard(3));
         assertEquals(3 - (4 + 5), value);
     }
 
@@ -165,7 +165,7 @@ class MinMaxBestMoveStrategyTest {
         board.setPlayerAt(0, 0, p1);
         board.setPlayerAt(0, 1, p1);
         // Best move obviously is 0,2
-        GameMove bestMove = strategy.findBestMove(board, 5);
+        GameMove bestMove = strategy.findBestMove(new Player[]{p1, p2}, ai, board, 5);
         assertEquals(0, bestMove.getX());
         assertEquals(2, bestMove.getY());
 
@@ -173,7 +173,7 @@ class MinMaxBestMoveStrategyTest {
         board.setPlayerAt(2, 2, ai);
 
         // Best move to win is 1,2
-        bestMove = strategy.findBestMove(board, 5);
+        bestMove = strategy.findBestMove(new Player[]{p1, p2}, ai, board, 5);
         assertEquals(1, bestMove.getX());
         assertEquals(2, bestMove.getY());
 
@@ -181,7 +181,7 @@ class MinMaxBestMoveStrategyTest {
         board.setPlayerAt(1, 0, p2);
 
         // Best move to not lose from p2 is 1,1
-        bestMove = strategy.findBestMove(board, 5);
+        bestMove = strategy.findBestMove(new Player[]{p1, p2}, ai, board, 5);
         assertEquals(1, bestMove.getX());
         assertEquals(1, bestMove.getY());
     }

@@ -1,7 +1,7 @@
 package com.bitriddler.tictactoe.game.winner;
 
 import com.bitriddler.tictactoe.game.GameBoard;
-import com.bitriddler.tictactoe.game.Player;
+import com.bitriddler.tictactoe.game.players.Player;
 
 public class StandardWinnerStrategy implements WinnerStrategy {
     @Override

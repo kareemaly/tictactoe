@@ -2,6 +2,7 @@ package com.bitriddler.tictactoe.game;
 
 import static org.mockito.Mockito.*;
 
+import com.bitriddler.tictactoe.game.players.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
